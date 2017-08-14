@@ -1,0 +1,8 @@
+vn/vcc/adopt/server/sparkserver/core/SparkServer.class
+vn/vcc/adopt/client/GetChunkThread.class
+vn/vcc/adopt/tools/Tool.class
+vn/vcc/adopt/server/sparkserver/core/SaveObject.class
+vn/vcc/adopt/client/Chunk.class
+vn/vcc/adopt/client/ReceivedObject.class
+vn/vcc/adopt/server/sparkserver/model/SendObject.class
+vn/vcc/adopt/client/GetData.class
