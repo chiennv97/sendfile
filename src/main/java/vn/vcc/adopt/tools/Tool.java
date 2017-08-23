@@ -3,17 +3,11 @@ package vn.vcc.adopt.tools;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-import java.util.zip.Deflater;
-import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
-import java.util.zip.Inflater;
-import java.util.zip.InflaterInputStream;
-
-import org.json.simple.JSONObject;
 
 import spark.utils.IOUtils;
 
@@ -28,56 +22,36 @@ public class Tool {
 		}
 		return sb.toString();
 	}
-
-	public static byte[] gzip(byte[] bytes) throws IOException {
-		ByteArrayOutputStream byteStream = new ByteArrayOutputStream(bytes.length);
-		GZIPOutputStream zipStream = new GZIPOutputStream(byteStream);
-		zipStream.write(bytes);
-		zipStream.close();
-		byteStream.close();
-		byte[] compressData = byteStream.toByteArray();
-		return compressData;
-	}
-
 	public static byte[] unGzip(byte[] bytes) {
 		// tao byteStream va giai nen du lieu, copy vao byteStream
-		ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
 		try {
-			IOUtils.copy(new GZIPInputStream(new ByteArrayInputStream(bytes)), byteStream);
-		} catch (IOException e) {
-			e.printStackTrace();
+			ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+			ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+			GZIPInputStream gis = new GZIPInputStream(bais);
+			IOUtils.copy(gis, byteStream);
+			byte[] decompressedData = byteStream.toByteArray();
+			bais.close();
+			byteStream.close();
+			gis.close();
+			return decompressedData;
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
-		byte[] decompressData = byteStream.toByteArray();
-		return decompressData;
+		return null;
 	}
-
-	public static String genData(int begin, byte[] data) throws NoSuchAlgorithmException {
-		JSONObject obj = new JSONObject();
-		obj.put("begin", begin);
-		obj.put("checksum", calChecksum(data));
-		obj.put("data", Base64.getEncoder().encodeToString(data));
-		return obj.toString();
-//		return new String("{\"begin\":\"1\",\"checksum\":\"1\",\"data\":\"1\"}");
+	public static void copy(InputStream input, OutputStream output, long start, long length) throws IOException {
+		byte[] buffer = new byte[10240];
+		int read;
+		input.skip(start);
+		long toRead = length;
+		while ((read = input.read(buffer)) > 0) {
+			if ((toRead -= read) > 0) {
+				output.write(buffer, 0, read);
+			} else {
+				output.write(buffer, 0, (int) toRead + read);
+				break;
+			}
+		}
 	}
-	public static byte[] deflatezip(byte[] bytes) throws IOException {
-        ByteArrayOutputStream byteStream = new ByteArrayOutputStream(bytes.length);
-        DeflaterOutputStream zipStream = new DeflaterOutputStream(byteStream,new Deflater( 1, true ), 512);
-        zipStream.write(bytes);
-        zipStream.close();
-        byteStream.close();
-        byte[] compressData = byteStream.toByteArray();
-        return compressData;
-    }
-    public static byte[] undeflatezip(byte[] bytes) {
-        // tao byteStream va giai nen du lieu, copy vao byteStream
-        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-        try {
-            IOUtils.copy(new InflaterInputStream(new ByteArrayInputStream(bytes),new Inflater(true )), byteStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        byte[] decompressData = byteStream.toByteArray();
-        return decompressData;
-    }
-
 }

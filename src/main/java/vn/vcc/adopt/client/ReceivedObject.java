@@ -1,48 +1,38 @@
 package vn.vcc.adopt.client;
 
 public class ReceivedObject {
-
-	private byte[] rawData;
-	private int chunksReceived;
-	private int number_of_chunks;
-	private String class_name;
-
-	public ReceivedObject(int total, int number_of_chunks, String className){
-		rawData = new byte[total];
-		this.number_of_chunks = number_of_chunks;
-		chunksReceived = 0;
-		class_name = className;
+	private byte[] data;
+	private int chunkReceived;
+	private int total;
+	
+	public ReceivedObject(int totalBytes){
+		data = new byte[totalBytes];
+		chunkReceived = 0;
 	}
 
-	public byte[] getRawData() {
-		return rawData;
+	public byte[] getData() {
+		return data;
 	}
 
-	public void setRawData(byte[] rawData) {
-		this.rawData = rawData;
+	public void setData(byte[] data) {
+		this.data = data;
 	}
 
-	public int getChunksReceived() {
-		return chunksReceived;
+	public int getChunkReceived() {
+		return chunkReceived;
 	}
 
-	public void setChunksReceived(int chunksReceived) {
-		this.chunksReceived = chunksReceived;
+	public void setChunkReceived(int chunkReceived) {
+		this.chunkReceived = chunkReceived;
 	}
 
-	public int getNumber_of_chunks() {
-		return number_of_chunks;
+	public int getTotal() {
+		return total;
 	}
 
-	public void setNumber_of_chunks(int number_of_chunks) {
-		this.number_of_chunks = number_of_chunks;
+	public void setTotal(int total) {
+		this.total = total;
 	}
-
-	public String getClass_name() {
-		return class_name;
-	}
-
-	public void setClass_name(String class_name) {
-		this.class_name = class_name;
-	}
+	
+	
 }

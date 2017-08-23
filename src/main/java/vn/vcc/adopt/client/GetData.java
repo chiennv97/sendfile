@@ -1,89 +1,49 @@
 package vn.vcc.adopt.client;
 
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.SerializationUtils;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.FutureResponseListener;
+import org.eclipse.jetty.http.HttpFields;
+
 public class GetData {
-    // Timestamp cua file tren client
-    public static long timestamp = 0;
+	public static long timestamp = 0;
 
-    /**
-     * tra ve du lieu
-     */
-    public static ReceivedObject getData(String url) throws Exception {
+	public static ReceivedObject getNewData(String url) throws Exception {
+		long t1 = System.currentTimeMillis();
+		HttpClient httpClient = new HttpClient();
+		httpClient.start();
+		Request request = httpClient.newRequest(url).method("HEAD");
+		FutureResponseListener listener = new FutureResponseListener(request, 300 * 1024 * 1024);
+		request.send(listener);
+		ContentResponse response = listener.get(60, TimeUnit.SECONDS);
 
-        HttpClient httpClient = new HttpClient();
-        httpClient.start();
-        //request type 1
-        long t1 = System.currentTimeMillis();
-        ContentResponse response = httpClient.GET(url + "?type=1");
-        System.out.println("Thoi gian request dau: " + (System.currentTimeMillis() - t1));
-        System.out.println(response.getContentAsString());
-
-        //chuan bi cho request type 2
-        String[] strArr = response.getContentAsString().split("-");
-        timestamp = Long.parseLong(strArr[2]);
-        ReceivedObject receivedObject = new ReceivedObject(Integer.parseInt(strArr[1]), Integer.parseInt(strArr[0]), strArr[3]);
-
-        //request type 2
-        ExecutorService es = Executors.newCachedThreadPool();
-        for (int i = 0; i < Integer.parseInt(strArr[0]); i++) {
-            es.execute(new GetChunkThread(httpClient, receivedObject, i, url));
-        }
-        es.shutdown();
-        while (!es.awaitTermination(1, TimeUnit.MINUTES)) ;
-        System.out.println("Thoi gian tinh xong het: " + (System.currentTimeMillis() - t1));
-        httpClient.stop();
-        return receivedObject;
-    }
-
-    /**
-     * Tra ve timestamp cua file tren server
-     *
-     * @return
-     */
-    private static long getLastTime(String url) {
-        long lastTime;
-        try {
-            HttpClient httpClient = new HttpClient();
-            httpClient.start();
-            ContentResponse response = httpClient.GET(url + "?type=3");
-            String lastTimeString = response.getContentAsString();
-            lastTime = Long.parseLong(lastTimeString);
-            httpClient.stop();
-
-            return lastTime;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return Long.parseLong(null);
-    }
-
-    /**
-     * Check timestamp cua file o server (timestampServer) va timestamp cua file o client (timestapClient)
-     * Neu khac nhau thi tra ve file ReceiveObject
-     * Neu giong nhau thi tra ve null
-     */
-    public static ReceivedObject getNewData(String url) throws Exception {
-        long timestampServer = getLastTime(url);
-        long timestampClient = timestamp;
-        if (timestampServer != timestampClient) {
-            return getData(url);
-        }
-        return null;
-    }
-
-    public static long getTimestamp() {
-        return timestamp;
-    }
-
-    public static void setTimestamp(long timestamp) {
-        GetData.timestamp = timestamp;
-    }
-
+		HttpFields headers = response.getHeaders();
+		int length = Integer.parseInt(headers.getField("Length").getValue());
+		System.out.println(length);
+		long etag = Long.parseLong(headers.getField("ETag").getValue());
+		if (timestamp != etag) {
+			timestamp = etag;
+			ReceivedObject ro = new ReceivedObject(length);
+			ExecutorService es = Executors.newCachedThreadPool();
+			for (int i = 0; i < length; i += 10485760) {
+				es.execute(new GetChunkThread(i, Math.min(i + 10485759, length - 1), ro, url));
+			}
+			es.shutdown();
+			while (!es.awaitTermination(5, TimeUnit.MINUTES))
+				;
+			httpClient.stop();
+			System.out.println("Time: " + (System.currentTimeMillis() - t1));
+			return ro;
+		} else {
+			System.out.println("Khong co phien ban moi");
+			httpClient.stop();
+			return null;
+		}
+	}
 }
