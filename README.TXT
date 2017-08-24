@@ -35,4 +35,4 @@ Tại Client - Nơi cần nhận object:
     ReceivedObject receivedObj = GetData.getNewData("http://localhost:9999/getdata");
 
     //Map data vào object cần dùng
-    Model model = SerializationUtils.deserialize(receivedObj.getRawData());
+    Model model = SerializationUtils.deserialize(receivedObj.getData());
