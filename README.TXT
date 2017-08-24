@@ -4,7 +4,7 @@ Tại Server - Nơi có object cần gửi đi:
         Data data = new Data();
 
         // gọi hàm saveObject(Object object),
-        //truyền vào object cần gửi đi và  object model ví dụ:
+        //truyền vào đối tượng data vừa tạo và object cần gửi ví dụ:
         SaveObject.saveObject(data, MapData.model);
 
         // tạo cổng và lắng nghe request
@@ -18,8 +18,8 @@ Tại Server - Nơi có object cần gửi đi:
         // Tạo một đối tượng Data
         Data data = new Data();
 
-        // gọi hàm saveObject(Object object),
-        //truyền vào object cần gửi đi và  object model ví dụ:
+        
+        //truyền vào đối tượng data vừa tạo và  object cần gửi đi ví dụ:
         SaveObject.saveObject(data, MapData.model);
 
         // tạo cổng và lắng nghe request
