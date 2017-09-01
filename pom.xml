@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>vn.vcc.adopt</groupId>
   <artifactId>sendobj</artifactId>
-  <version>4.0</version>
+  <version>4.1</version>
   <dependencies>
   	<dependency>
         <groupId>org.slf4j</groupId>
@@ -47,19 +47,19 @@
 				</configuration>
 			</plugin>
             <!-- Maven Assembly Plugin -->
-        <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>3.0.0</version>
-                    <executions>
-                        <execution>
-                            <id>attach-sources</id>
-                            <goals>
-                                <goal>jar-no-fork</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
+            <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+            </plugin>
         </plugins>
   </build>
 </project>

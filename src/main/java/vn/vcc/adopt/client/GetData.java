@@ -24,19 +24,21 @@ public class GetData {
 		ContentResponse response = listener.get(60, TimeUnit.SECONDS);
 
 		HttpFields headers = response.getHeaders();
-		int length = Integer.parseInt(headers.getField("Length").getValue());
-		System.out.println(length);
+		int lengthObj1 = Integer.parseInt(headers.getField("LengthObject1").getValue());
+		int lengthObj2 = Integer.parseInt(headers.getField("LengthObject2").getValue());
+		String nameObj1 = headers.getField("NameObject1").getValue();
+		String nameObj2 = headers.getField("NameObject2").getValue();
+		System.out.println(lengthObj1);
+		System.out.println(lengthObj2);
 		long etag = Long.parseLong(headers.getField("ETag").getValue());
 		if (timestamp != etag) {
 			timestamp = etag;
-			ReceivedObject ro = new ReceivedObject(length);
-			ExecutorService es = Executors.newCachedThreadPool();
-			for (int i = 0; i < length; i += 10485760) {
-				es.execute(new GetChunkThread(i, Math.min(i + 10485759, length - 1), ro, url));
-			}
+			ReceivedObject ro = new ReceivedObject(lengthObj1, lengthObj2, nameObj1, nameObj2);
+			ExecutorService es = Executors.newFixedThreadPool(2);
+			es.execute(new GetOneObject(lengthObj1, ro, url, nameObj1, nameObj2, 1));
+			es.execute(new GetOneObject(lengthObj2, ro, url, nameObj1, nameObj2, 2));
 			es.shutdown();
-			while (!es.awaitTermination(5, TimeUnit.MINUTES))
-				;
+			while (!es.awaitTermination(5, TimeUnit.MINUTES));
 			httpClient.stop();
 			System.out.println("Time: " + (System.currentTimeMillis() - t1));
 			return ro;

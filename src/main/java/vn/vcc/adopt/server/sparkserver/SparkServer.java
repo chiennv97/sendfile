@@ -24,26 +24,36 @@ public class SparkServer implements Route {
 	public Object handle(Request request, Response response) throws Exception {
 		// TODO Auto-generated method stub
 		if (request.requestMethod().equals("HEAD")) {
-			response.header("Length", data.getData().length + "");
+			response.header("NameObject1", data.getNameDataObj1());
+			response.header("NameObject2", data.getNameDataObj2());
+			response.header("LengthObject1", data.getDataObj1().length + "");
+			response.header("LengthObject2", data.getDataObj2().length + "");
 			response.header("ETag", data.getTimestamp()+"");
 			return response;
 		} else {
 			String range = request.headers("Range");
+			String nameObject = request.headers("NameObject");
+			byte[] dataObj;
+			if(nameObject.equals(data.getNameDataObj1())){
+				dataObj = data.getDataObj1();
+			}else {
+				dataObj= data.getDataObj2();
+			}
 			OutputStream output = response.raw().getOutputStream();
-			InputStream input = new ByteArrayInputStream(data.getData());
+			InputStream input = new ByteArrayInputStream(dataObj);
 			output = new GZIPOutputStream(output, 10240);
 			if (range != null) {
 				String[] arr1 = range.split("=");
 				String[] arr2 = arr1[1].split("-");
 				long start = Long.parseLong(arr2[0]);
 				long end = Long.parseLong(arr2[1]);
-				String checksum = Tool.calChecksum(Arrays.copyOfRange(data.getData(), Integer.parseInt(start+""), Integer.parseInt((end+1)+"")));
+				String checksum = Tool.calChecksum(Arrays.copyOfRange(dataObj, Integer.parseInt(start+""), Integer.parseInt((end+1)+"")));
 				response.header("Checksum", checksum);
 				Tool.copy(input, output, start, end - start + 1);
 			} else {
-				String checksum = Tool.calChecksum(Arrays.copyOfRange(data.getData(), 0, data.getData().length));
+				String checksum = Tool.calChecksum(Arrays.copyOfRange(dataObj, 0, dataObj.length));
 				response.header("Checksum", checksum);
-				Tool.copy(input, output, 0, data.getData().length);
+				Tool.copy(input, output, 0, dataObj.length);
 			}
 			output.close();
 			return response;
