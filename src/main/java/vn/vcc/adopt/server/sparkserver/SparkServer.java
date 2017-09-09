@@ -1,17 +1,16 @@
 package vn.vcc.adopt.server.sparkserver;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.zip.GZIPOutputStream;
-
 import spark.Request;
 import spark.Response;
 import spark.Route;
 import vn.vcc.adopt.server.model.Data;
 import vn.vcc.adopt.tools.Tool;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.zip.GZIPOutputStream;
 
 public class SparkServer implements Route {
 
@@ -24,21 +23,26 @@ public class SparkServer implements Route {
 	public Object handle(Request request, Response response) throws Exception {
 		// TODO Auto-generated method stub
 		if (request.requestMethod().equals("HEAD")) {
-			response.header("NameObject1", data.getNameDataObj1());
-			response.header("NameObject2", data.getNameDataObj2());
-			response.header("LengthObject1", data.getDataObj1().length + "");
-			response.header("LengthObject2", data.getDataObj2().length + "");
+			int numberOfObject = data.getNumberOfObject();
+			String listNameObject = "";
+			String listLengthObject = "";
+			for(String key : data.getData().keySet()){
+				listNameObject += key+"-";
+				listLengthObject += data.getData().get(key).length+"-";
+			}
+			System.out.println(listNameObject);
+			response.header("ListNameObject", listNameObject);
+			response.header("ListLengthObject", listLengthObject);
+			response.header("NumberOfObject", numberOfObject + "");
 			response.header("ETag", data.getTimestamp()+"");
 			return response;
-		} else {
+		}
+ 		else {
 			String range = request.headers("Range");
 			String nameObject = request.headers("NameObject");
-			byte[] dataObj;
-			if(nameObject.equals(data.getNameDataObj1())){
-				dataObj = data.getDataObj1();
-			}else {
-				dataObj= data.getDataObj2();
-			}
+			byte[] dataObj = data.getData().get(nameObject);
+			System.out.println(nameObject);
+			System.out.println(range);
 			OutputStream output = response.raw().getOutputStream();
 			InputStream input = new ByteArrayInputStream(dataObj);
 			output = new GZIPOutputStream(output, 10240);
@@ -58,5 +62,6 @@ public class SparkServer implements Route {
 			output.close();
 			return response;
 		}
+
 	}
 }

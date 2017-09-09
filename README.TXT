@@ -1,12 +1,17 @@
-Version 4.1
 Tại Server - Nơi có object cần gửi đi:
     //Spark
         // Tạo một đối tượng Data
         Data data = new Data();
 
-        // gọi hàm saveObject(Object object),
-        //truyền vào đối tượng data vừa tạo và 2 object cần gửi đi và tên ví dụ:
-        SaveObject.saveObject(data, hashmap1, ""obj1", hashmap2, "obj2");
+        // Lưu data vừa tạo
+        SaveObject.saveData(data);
+
+        // Lưu các object cần gửi đi - ví dụ gửi 2 0bject đi
+        SaveObject.saveObject("a", MapData.model);
+        SaveObject.saveObject("b", hashmap1);
+
+        // Lưu thời gian
+   		SaveObject.saveLastModified();
 
         // tạo cổng và lắng nghe request
         port(9999);
@@ -14,14 +19,30 @@ Tại Server - Nơi có object cần gửi đi:
         get("/getdata",new SparkServer(data));
 
 
+        // Thay đổi object cần gửi đi
+            SaveObject.saveObject("a", MapData.model);
+            SaveObject.saveObject("b", hashmap1);
+
+            // Lưu lại thời gian
+            SaveObject.saveLastModified();
+
+        // Xóa object đã lưu vào đối tượng data
+            SaveObject.removeOjbectByName("a");
+            // hoặc
+            SaveObject.removeAllObject();
+
 
 Tại Client - Nơi cần nhận object:
 
 
     // nếu có đối tượng mới hơn ở phía server thì trả về đối tượng đó
     // nếu không có đối tượng mới hơn thì trả về null
-    ReceivedObject receivedObj = GetData.getNewData("http://localhost:9999/getdata");
+    ListReceivedObject listReceivedObj = GetData.getNewData("http://localhost:9999/getdata");
 
     //Map data vào 2 object cần dùng
-    HashMap model1 = SerializationUtils.deserialize(receivedObj.getObjByName("obj1"));
-    HashMap model2 = SerializationUtils.deserialize(receivedObj.getObjByName("obj2"));
+    if(listReceivedObj.getListData().get("a")!= null){
+        Model model1 = SerializationUtils.deserialize(listReceivedObj.getListData().get("a").getData());
+    }
+    if(listReceivedObj.getListData().get("b")!= null) {
+        HashMap model2 = SerializationUtils.deserialize(listReceivedObj.getListData().get("b").getData());
+    }

@@ -14,18 +14,14 @@ public class GetChunkThread implements Runnable {
 	private int start;
 	private int end;
 	private String url;
-	private String nameObj1;
-	private String nameObj2;
-	private int selectNameObj;
+	private String nameObj;
 
-	public GetChunkThread(int start, int end, ReceivedObject ro, String url, String nameObj1, String nameObj2, int selectNameObj) {
+	public GetChunkThread(int start, int end, ReceivedObject ro, String url, String nameObj) {
 		this.start = start;
 		this.end = end;
 		this.ro = ro;
 		this.url = url;
-		this.nameObj1 = nameObj1;
-		this.nameObj2 = nameObj2;
-		this.selectNameObj = selectNameObj;
+		this.nameObj = nameObj;
 	}
 
 	public void run() {
@@ -35,12 +31,6 @@ public class GetChunkThread implements Runnable {
 			httpClient.start();
 			boolean success = false;
 			while (!success) {
-				String nameObj;
-				if(selectNameObj == 1){
-					nameObj = nameObj1;
-				}else{
-					nameObj = nameObj2;
-				}
 				Request request = httpClient.newRequest(url)
 						.header("Range","bytes=" + start + "-" + end)
 						.header("NameObject", nameObj);
@@ -50,14 +40,8 @@ public class GetChunkThread implements Runnable {
 				String checksum = response.getHeaders().get("Checksum");
 				byte[] decompressed = Tool.unGzip(response.getContent());
 				if (Tool.calChecksum(decompressed).equals(checksum)) {
-					if(selectNameObj == 1){
-						System.arraycopy(decompressed, 0, ro.getDataObj1(), start, end - start + 1);
-						success = true;
-					}else {
-						System.arraycopy(decompressed, 0, ro.getDataObj2(), start, end - start + 1);
-						success = true;
-					}
-
+					System.arraycopy(decompressed, 0, ro.getData(), start, end - start + 1);
+					success = true;
 				}
 			}
 
