@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>vn.vcc.adopt</groupId>
   <artifactId>sendobj</artifactId>
-  <version>4.0</version>
+  <version>4.2</version>
   <dependencies>
   	<dependency>
         <groupId>org.slf4j</groupId>

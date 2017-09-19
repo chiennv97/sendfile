@@ -41,8 +41,6 @@ public class SparkServer implements Route {
 			String range = request.headers("Range");
 			String nameObject = request.headers("NameObject");
 			byte[] dataObj = data.getData().get(nameObject);
-			System.out.println(nameObject);
-			System.out.println(range);
 			OutputStream output = response.raw().getOutputStream();
 			InputStream input = new ByteArrayInputStream(dataObj);
 			output = new GZIPOutputStream(output, 10240);

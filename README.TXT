@@ -1,5 +1,6 @@
+Version 4.2.1 - Add Rapidoid
 Tại Server - Nơi có object cần gửi đi:
-    //Spark
+
         // Tạo một đối tượng Data
         Data data = new Data();
 
@@ -14,10 +15,15 @@ Tại Server - Nơi có object cần gửi đi:
    		SaveObject.saveLastModified();
 
         // tạo cổng và lắng nghe request
-        port(9999);
-        head("/getdata",new SparkServer(data));
-        get("/getdata",new SparkServer(data));
+            //Spark
+            port(9999);
+            head("/getdata",new SparkServer(data));
+            get("/getdata",new SparkServer(data));
 
+            //Rapidoid
+            On.port(9999);
+            On.head("/getdata").plain(new RapidoidServer(data));
+            On.get("/getdata").plain(new RapidoidServer(data));
 
         // Thay đổi object cần gửi đi
             SaveObject.saveObject("a", MapData.model);
