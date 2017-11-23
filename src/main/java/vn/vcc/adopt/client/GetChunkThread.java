@@ -26,8 +26,8 @@ public class GetChunkThread implements Runnable {
 
 	public void run() {
 		// TODO Auto-generated method stub
+        HttpClient httpClient = new HttpClient();
 		try {
-			HttpClient httpClient = new HttpClient();
 			httpClient.start();
 			boolean success = false;
 			while (!success) {
@@ -45,10 +45,15 @@ public class GetChunkThread implements Runnable {
 				}
 			}
 
-			httpClient.stop();
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		} finally {
+            try {
+                httpClient.stop();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
 	}
 

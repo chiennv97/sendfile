@@ -44,8 +44,6 @@ public class SaveObject {
                 data.setNumberOfObject(data.getNumberOfObject()-1);
             }
             saveLastModified();
-        }else{
-            System.out.println("Khong co object " + nameObject);
         }
 
 

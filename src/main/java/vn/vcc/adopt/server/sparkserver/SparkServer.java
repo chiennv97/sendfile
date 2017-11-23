@@ -30,7 +30,6 @@ public class SparkServer implements Route {
 				listNameObject += key+"-";
 				listLengthObject += data.getData().get(key).length+"-";
 			}
-			System.out.println(listNameObject);
 			response.header("ListNameObject", listNameObject);
 			response.header("ListLengthObject", listLengthObject);
 			response.header("NumberOfObject", numberOfObject + "");

@@ -29,7 +29,6 @@ public class RapidoidServer implements ReqHandler {
                 listNameObject += key+"-";
                 listLengthObject += data.getData().get(key).length+"-";
             }
-            System.out.println(listNameObject);
             resp.header("ListNameObject", listNameObject);
             resp.header("ListLengthObject", listLengthObject);
             resp.header("NumberOfObject", numberOfObject + "");
