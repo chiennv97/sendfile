@@ -3,6 +3,12 @@
   <groupId>vn.vcc.adopt</groupId>
   <artifactId>sendobj</artifactId>
   <version>4.2</version>
+  <repositories>
+      <repository>
+          <id>adopt</id>
+          <url>http://192.168.23.191:8081/nexus/content/repositories/12/</url>
+      </repository>
+  </repositories>
   <dependencies>
   	<dependency>
         <groupId>org.slf4j</groupId>

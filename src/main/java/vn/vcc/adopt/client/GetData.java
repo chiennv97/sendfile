@@ -40,15 +40,15 @@ public class GetData {
             ListReceivedObject listRO = new ListReceivedObject();
             ExecutorService es = Executors.newCachedThreadPool();
 
-            if(timestamp < ETag){
-                timestamp = ETag;
+//            if(timestamp < ETag){
+//                timestamp = ETag;
                 for(int i=0; i<numberOfObject; i++){
                     int length = Integer.parseInt(lengthObject[i]);
                     ReceivedObject RO = new ReceivedObject(length);
                     es.execute(new GetOneObject(length,RO,url,nameObject[i]));
                     listRO.getListData().put(nameObject[i], RO);
                 }
-            }
+//            }
             es.shutdown();
             try {
                 while (!es.awaitTermination(5, TimeUnit.MINUTES));
